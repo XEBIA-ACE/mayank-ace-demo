@@ -1,0 +1,56 @@
+# Tasks: SCAFFOLD-SVC-002
+
+> Tasks are ordered and independently reviewable. Each maps to a specific implementation constraint or verification obligation from the approved specification.
+
+---
+
+## Scaffold Tasks
+
+- [ ] **T001** — Set up the project skeleton for this stack: dependency manifest (`package.json` with all required dependencies for Node.js 20+ / TypeScript, Apollo Server or Fastify/Express, Redis, AWS SQS/Azure Service Bus, OpenTelemetry, opossum, Vault/Secrets Manager SDK, PostgreSQL, PostGIS client, AWS S3 SDK, Zod/Joi), entrypoint (`src/index.ts`), and linting/formatting config (ESLint + Prettier or equivalent).
+
+- [ ] **T002** — Add environment-based configuration loading: implement a typed config module (e.g. `src/config.ts`) that reads all service endpoints, credentials, and feature flags from environment variables; no hardcoded secrets or endpoints anywhere in the codebase.
+
+- [ ] **T003** — Add a health-check endpoint: expose `GET /health` (or equivalent GraphQL `query { health }`) returning service status so the service can be verified as running locally and in Kubernetes liveness/readiness probes.
+
+- [ ] **T004** — Add a database connection helper for the PostgreSQL client (PII Isolated Data Store), configured entirely via environment variables; include connection pooling and graceful shutdown handling.
+
+- [ ] **T005** — Add a Redis client helper configured via environment variables, supporting the three cache namespaces: session cache, ERP stock cache (5-minute TTL), and progressive profiling cache.
+
+- [ ] **T006** — Add a Durable Message Queue client stub (AWS SQS or Azure Service Bus) configured via environment variables, with placeholder publish method for enriched lead payloads.
+
+- [ ] **T007** — Add a Secrets Vault client helper (HashiCorp Vault or AWS Secrets Manager SDK) that retrieves all downstream API credentials at runtime; no credentials loaded from static config files.
+
+- [ ] **T008** — Add an OpenTelemetry instrumentation bootstrap (`src/telemetry.ts`) initialising tracing with correlation ID propagation; instrument the HTTP/GraphQL server and all outbound client calls.
+
+- [ ] **T009** — Add a circuit-breaker wrapper (opossum or equivalent) as a reusable utility (`src/resilience/circuitBreaker.ts`) to be applied per downstream service dependency.
+
+- [ ] **T010** — Add a request/response schema validation middleware at the BFF boundary using Zod or Joi; apply to all inbound routes/resolvers.
+
+- [ ] **T011** — Add a PostGIS / geospatial query client helper configured via environment variables for Geospatial Dealer Data Store access (dealer locator radius searches and lead territory routing).
+
+- [ ] **T012** — Add an AWS S3 SDK client helper configured via environment variables for Driver/Firmware Metadata Store queries.
+
+- [ ] **T013** — Add Docker scaffold: `Dockerfile` (multi-stage, Node.js 20 base), `.dockerignore`, and a `docker-compose.yml` for local development with Redis and PostgreSQL sidecars.
+
+- [ ] **T014** — Add Kubernetes scaffold: base `deployment.yaml`, `service.yaml`, and `configmap.yaml` manifests reflecting stateless, horizontally scalable deployment with liveness/readiness probes pointing to the health-check endpoint.
+
+---
+
+## Verification Tasks
+
+- [ ] **T015** — Verify **AC-1**: confirm the scaffolded repository satisfies the full acceptance criterion — all required dependencies are present in the manifest, all environment-variable-driven config modules exist, the health-check endpoint responds, the database/Redis/queue/vault/S3/geospatial client helpers are present and configurable, OpenTelemetry is bootstrapped, circuit-breaker and schema-validation utilities are in place, and Docker/Kubernetes artefacts are present. Scaffold the BFF Integration Layer (integration) per its approved architecture. Technology stack: Node.js 20+ / TypeScript, GraphQL (Apollo Server) or REST (Fastify / Express), Redis (session cache, ERP stock cache, progressive profiling cache), AWS SQS / Azure Service Bus (Durable Message Queue client), JWT / HMAC-SHA256 (gated content token generation and validation), OpenTelemetry (distributed tracing with correlation IDs), Resilience4j-pattern circuit breakers (opossum or equivalent Node.js library), HashiCorp Vault / AWS Secrets Manager SDK (runtime secret retrieval), PostgreSQL client (PII Isolated Data Store access), PostGIS / geospatial query client (Geospatial Dealer Data Store), AWS S3 SDK (Driver/Firmware Metadata Store queries), Zod / Joi (request/response schema validation), Docker / Kubernetes (containerised, horizontally scalable, stateless deployment). Responsibilities: Expose a GraphQL or well-structured REST API to the Next.js Frontend Shell as the single data surface; Aggregate and orchestrate calls to Salesforce CRM, ERP, Support System, Tax Service, Payment Provider, and Marketing Automation Platform; Validate CIAM OIDC tokens (JWT signature verification against CIAM JWKS) on all authenticated endpoints; Validate Entra ID tokens on all staff/admin endpoints; enforce strict separation — no endpoint accepts tokens from both providers; Implement exponential back-off retry (1m/5m/30m) and dead-letter handling for all outbound integrations; Publish enriched lead payloads to the Durable Message Queue for guaranteed async delivery to Salesforce CRM and Marketing Automation; Enrich lead payloads with UTM parameters, source page, and product interest before queuing; Execute lead routing algorithm using ZIP-code territory table (Geospatial Dealer Data Store) with industry-based override to assign dealer or direct sales rep; Issue short-lived HMAC-SHA256 / JWT signed tokens encoding specific asset ID for gated content download access; Validate gated content tokens server-side on every download request (signature, expiry, asset ID match); Perform progressive profiling CRM contact lookup for returning visitors; cache results per session in Redis; Implement server-side field suppression logic for progressive profiling forms; Cache ERP stock availability data with 5-minute TTL in Redis to reduce ERP API call volume; Read and write customer PII to the PII Isolated Data Store for authenticated account hub operations; Query Geospatial Dealer Data Store for dealer locator radius searches and lead territory routing; Query Driver/Firmware Metadata Store for support centre driver finder feature; Proxy support ticket create, list, and detail operations to Support System for authenticated customers; Enforce idempotency on all outbound integration calls using idempotency keys generated at submission time; Maintain structured audit logs (with correlation IDs) for all lead routing decisions, support ticket operations, gated content access, and admin actions; Check GPC signal server-side on every SSR request to enforce server-side consent for data collection; Orchestrate DSAR deletion workflow across PII store, CRM, and Marketing Automation with status tracking; Retrieve all downstream API credentials from Secrets Vault at runtime; Implement circuit breakers per downstream service dependency to prevent cascade failures; Implement request/response schema validation at BFF boundary. Ground the generated spec in this service's own C3/C4 diagrams and API spec already on file in Architecture, not just this summary.
+
+- [ ] **T016** — Validate credential and personal-data handling against the story's acceptance criteria (security obligation).
+
+- [ ] **T017** — Verify the changed user flow against the stated accessibility criteria (quality obligation).
+
+---
+
+## Provenance
+
+- **Story ID**: `SCAFFOLD-SVC-002`
+- **Run ID**: `30fc8bf5-a529-46cb-92d9-9e4bcc341dff`
+- **Project ID**: `61393f69-dfc8-40ff-8342-28015c6b565c`
+- **Policy version**: `ace-spec-format/v1`
+- **Source hash**: `sha256:f4d11c5f042c9f959e56aaf92639fa8a009ed5668827fcec09a603f9f5a08d43`
+- **Accepted impact hash**: `null`
